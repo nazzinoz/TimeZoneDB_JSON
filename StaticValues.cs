@@ -25,7 +25,11 @@ namespace TimeZoneDB_JSON
         public static readonly string EXECUTE_PATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),DEVELOPER,APP_NAME);
         public static readonly string VERSION_FILE = Path.Combine(EXECUTE_PATH, @"version.txt");
         public static readonly string DOWNLOAD_FILE = Path.Combine(EXECUTE_PATH, @"timezonedb.csv.zip");
-        
+
+        public static readonly string EXTRACTED_ZONE = Path.Combine(EXECUTE_PATH, @"zone.csv");
+        public static readonly string EXTRACTED_COUNTRY = Path.Combine(EXECUTE_PATH, @"country.csv");
+        public static readonly string EXTRACTED_TIMEZONE = Path.Combine(EXECUTE_PATH, @"timezone.csv");
+
         public static readonly WebClient WEB_CLIENT = new WebClient();
         public static MainWindow MAIN_WINDOW;
     }

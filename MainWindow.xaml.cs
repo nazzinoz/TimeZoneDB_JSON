@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Web;
+using Microsoft.VisualBasic.FileIO;
 
 namespace TimeZoneDB_JSON
 {
@@ -83,6 +84,59 @@ namespace TimeZoneDB_JSON
 
         private void Button_Generate_Click(object sender, RoutedEventArgs e)
         {
+            var zoneParser = new TextFieldParser(StaticValues.EXTRACTED_ZONE);
+            zoneParser.SetDelimiters(",");
+
+            var zoneParsed = new Dictionary<int, Tuple<string, string, string>>();
+            while (!zoneParser.EndOfData)
+            {
+                var lineData = zoneParser.ReadFields();
+
+                var timezoneId = int.Parse(lineData[0]);
+                var countryCode = lineData[1];
+                var timezoneName = lineData[2];
+
+                var area = timezoneName.Split('/')[0];
+                var zone = timezoneName.Substring(area.Length + 1);
+
+                zoneParsed[timezoneId] = new Tuple<string, string, string>(countryCode, area, zone);
+            }
+
+            var countryParser = new TextFieldParser(StaticValues.EXTRACTED_COUNTRY);
+            countryParser.SetDelimiters(",");
+
+            var countryParsed = new Dictionary<string, string>();
+            while (!countryParser.EndOfData)
+            {
+                var lineData = countryParser.ReadFields();
+
+                var countryCode = lineData[0];
+                var countryName = lineData[1];
+
+                countryParsed[countryCode] = countryName;
+            }
+            countryParser.Close();
+
+            var timezoneParser = new TextFieldParser(StaticValues.EXTRACTED_TIMEZONE);
+            timezoneParser.SetDelimiters(",");
+
+            var timezoneParsed = new Dictionary<int, List<Tuple<string, long, int, bool>>>();
+            while (!timezoneParser.EndOfData)
+            {
+                var lineData = timezoneParser.ReadFields();
+
+                var timezoneId = int.Parse(lineData[0]);
+                var abbreviation = lineData[1];
+                var unixTimestamp = long.Parse(lineData[2]);
+                var offset = int.Parse(lineData[3]);
+                var isDaylightSavingTime = int.Parse(lineData[4]) == 1;
+
+                if (!timezoneParsed.ContainsKey(timezoneId))
+                    timezoneParsed[timezoneId] = new List<Tuple<string, long, int, bool>>();
+
+                timezoneParsed[timezoneId].Add(new Tuple<string, long, int, bool>(abbreviation, unixTimestamp, offset, isDaylightSavingTime));
+            }
+            timezoneParser.Close();
         }
     }
 }
