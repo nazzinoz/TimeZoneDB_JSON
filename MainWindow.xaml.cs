@@ -1,21 +1,12 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Web;
-using Microsoft.VisualBasic.FileIO;
 
 namespace TimeZoneDB_JSON
 {
@@ -37,13 +28,13 @@ namespace TimeZoneDB_JSON
 
         private void Button_CheckUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (!File.Exists(StaticValues.VERSION_FILE))
+            if (!File.Exists(StaticValues.DOWNLOAD_VERSION_FILE))
             {
                 MessageBox.Show(StaticValues.MESSAGE_NO_DB);
                 return;
             }
 
-            var localVersion = File.ReadAllText(StaticValues.VERSION_FILE);
+            var localVersion = File.ReadAllText(StaticValues.DOWNLOAD_VERSION_FILE);
 
             StaticValues.WEB_CLIENT.Headers.Add("User-Agent", StaticValues.DEVELOPER);
             var currentVersion = StaticValues.WEB_CLIENT.DownloadString(StaticValues.VERSION_API);
@@ -58,16 +49,16 @@ namespace TimeZoneDB_JSON
 
         private void Button_Download_Click(object sender, RoutedEventArgs e)
         {
-            if (!Directory.Exists(StaticValues.EXECUTE_PATH))
-                Directory.CreateDirectory(StaticValues.EXECUTE_PATH);
+            if (!Directory.Exists(StaticValues.DOWNLOAD_PATH))
+                Directory.CreateDirectory(StaticValues.DOWNLOAD_PATH);
 
             StaticValues.WEB_CLIENT.Headers.Add("User-Agent", StaticValues.DEVELOPER);
             var currentVersion = StaticValues.WEB_CLIENT.DownloadString(StaticValues.VERSION_API);
 
             StaticValues.WEB_CLIENT.Headers.Add("User-Agent", StaticValues.DEVELOPER);
-            StaticValues.WEB_CLIENT.DownloadFile(StaticValues.DOWNLOAD_API, StaticValues.DOWNLOAD_FILE);
+            StaticValues.WEB_CLIENT.DownloadFile(StaticValues.DOWNLOAD_API, StaticValues.DOWNLOAD_TIMEZONE_FILE);
 
-            File.WriteAllText(StaticValues.VERSION_FILE, currentVersion);
+            File.WriteAllText(StaticValues.DOWNLOAD_VERSION_FILE, currentVersion);
 
             var message = StaticValues.MESSAGE_CURRENT_VERSION + currentVersion
                 + Environment.NewLine + StaticValues.MESSAGE_DOWNLOADED;
@@ -77,7 +68,7 @@ namespace TimeZoneDB_JSON
 
         private void Button_Extract_Click(object sender, RoutedEventArgs e)
         {
-            ZipFile.ExtractToDirectory(StaticValues.DOWNLOAD_FILE, StaticValues.EXECUTE_PATH, true);
+            ZipFile.ExtractToDirectory(StaticValues.DOWNLOAD_TIMEZONE_FILE, StaticValues.EXTRACT_PATH, true);
 
             MessageBox.Show(StaticValues.MESSAGE_EXTRACTED);
         }
@@ -87,19 +78,16 @@ namespace TimeZoneDB_JSON
             var zoneParser = new TextFieldParser(StaticValues.EXTRACTED_ZONE);
             zoneParser.SetDelimiters(",");
 
-            var zoneParsed = new Dictionary<int, Tuple<string, string, string>>();
+            var zoneParsed = new Dictionary<string, Dictionary<string, dynamic>>();
             while (!zoneParser.EndOfData)
             {
                 var lineData = zoneParser.ReadFields();
 
                 var timezoneId = int.Parse(lineData[0]);
                 var countryCode = lineData[1];
-                var timezoneName = lineData[2];
+                var name = lineData[2];
 
-                var area = timezoneName.Split('/')[0];
-                var zone = timezoneName.Substring(area.Length + 1);
-
-                zoneParsed[timezoneId] = new Tuple<string, string, string>(countryCode, area, zone);
+                zoneParsed[timezoneId.ToString()] = new Dictionary<string, dynamic> { { StaticValues.KEY_COUNTRY_CODE, countryCode }, { StaticValues.KEY_NAME, name } };
             }
 
             var countryParser = new TextFieldParser(StaticValues.EXTRACTED_COUNTRY);
@@ -120,7 +108,7 @@ namespace TimeZoneDB_JSON
             var timezoneParser = new TextFieldParser(StaticValues.EXTRACTED_TIMEZONE);
             timezoneParser.SetDelimiters(",");
 
-            var timezoneParsed = new Dictionary<int, List<Tuple<string, long, int, bool>>>();
+            var timezoneParsed = new Dictionary<string, List<Dictionary<string, dynamic>>>();
             while (!timezoneParser.EndOfData)
             {
                 var lineData = timezoneParser.ReadFields();
@@ -131,12 +119,30 @@ namespace TimeZoneDB_JSON
                 var offset = int.Parse(lineData[3]);
                 var isDaylightSavingTime = int.Parse(lineData[4]) == 1;
 
-                if (!timezoneParsed.ContainsKey(timezoneId))
-                    timezoneParsed[timezoneId] = new List<Tuple<string, long, int, bool>>();
+                if (!timezoneParsed.ContainsKey(timezoneId.ToString()))
+                    timezoneParsed[timezoneId.ToString()] = new List<Dictionary<string, dynamic>>();
 
-                timezoneParsed[timezoneId].Add(new Tuple<string, long, int, bool>(abbreviation, unixTimestamp, offset, isDaylightSavingTime));
+                timezoneParsed[timezoneId.ToString()].Add(new Dictionary<string, dynamic> { { StaticValues.KEY_ABBREVIATION, abbreviation }, { StaticValues.KEY_UNIX_TIME_STAMP, unixTimestamp }, { StaticValues.KEY_OFFSET, offset }, { StaticValues.KEY_DST, isDaylightSavingTime } });
             }
             timezoneParser.Close();
+
+            var filledData = new Dictionary<string, Dictionary<string, dynamic>>(zoneParsed);
+            timezoneParsed.Keys.ToList().ForEach(key => filledData[key][StaticValues.KEY_CHANGE] = timezoneParsed[key]);
+
+            if (!Directory.Exists(StaticValues.RESULT_PATH))
+                Directory.CreateDirectory(StaticValues.RESULT_PATH);
+
+            File.WriteAllText(StaticValues.RESULT_ZONE, JsonSerializer.Serialize(zoneParsed));
+            File.WriteAllText(StaticValues.RESULT_COUNTRY, JsonSerializer.Serialize(countryParsed));
+            File.WriteAllText(StaticValues.RESULT_TIMEZONE, JsonSerializer.Serialize(timezoneParsed));
+            File.WriteAllText(StaticValues.RESULT_FILE, JsonSerializer.Serialize(filledData));
+
+            MessageBox.Show(StaticValues.MESSAGE_GENERATED);
+        }
+
+        private void Button_Open_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("explorer.exe", StaticValues.RESULT_PATH);
         }
     }
 }

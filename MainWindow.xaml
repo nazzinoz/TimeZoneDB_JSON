@@ -11,6 +11,6 @@
         <Button x:Name="Button_Download" Content="Download" Margin="10,45,10,0" VerticalAlignment="Top" Height="30" Click="Button_Download_Click"/>
         <Button x:Name="Button_Extract" Content="Extract" Margin="10,80,10,0" VerticalAlignment="Top" Height="30" Click="Button_Extract_Click"/>
         <Button x:Name="Button_Generate" Content="Generate" Margin="10,115,10,0" VerticalAlignment="Top" Height="30" Click="Button_Generate_Click"/>
-        <Button x:Name="Button_Open" Content="OpenJson" Margin="10,150,10,10" VerticalAlignment="Top" Height="30"/>
+        <Button x:Name="Button_Open" Content="OpenJson" Margin="10,150,10,10" VerticalAlignment="Top" Height="30" Click="Button_Open_Click"/>
     </Grid>
 </Window>
