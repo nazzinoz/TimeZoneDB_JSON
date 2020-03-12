@@ -5,12 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TimeZoneDB_JSON"
         mc:Ignorable="d"
-        Title="TimeZoneDB_JSON" Width="400" SizeToContent="Height" Loaded="Window_Loaded">
+        Title="TimeZoneDB_JSON" SizeToContent="WidthAndHeight" Loaded="Window_Loaded" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
-        <Button x:Name="Button_CheckUpdate" Content="Check for update" Margin="10,10,10,0" VerticalAlignment="Top" Height="30" Click="Button_CheckUpdate_Click"/>
-        <Button x:Name="Button_Download" Content="Download" Margin="10,45,10,0" VerticalAlignment="Top" Height="30" Click="Button_Download_Click"/>
-        <Button x:Name="Button_Extract" Content="Extract" Margin="10,80,10,0" VerticalAlignment="Top" Height="30" Click="Button_Extract_Click"/>
-        <Button x:Name="Button_Generate" Content="Generate" Margin="10,115,10,0" VerticalAlignment="Top" Height="30" Click="Button_Generate_Click"/>
-        <Button x:Name="Button_Open" Content="OpenJson" Margin="10,150,10,10" VerticalAlignment="Top" Height="30" Click="Button_Open_Click"/>
+        <Button x:Name="Button_CheckUpdate" Content="Check for update" Margin="10,10,10,10" VerticalAlignment="Top" Height="30" Click="Button_CheckUpdate_Click" HorizontalAlignment="Left" Width="270"/>
+        <Button x:Name="Button_Download" Content="Download" Margin="10,45,10,10" VerticalAlignment="Top" Height="30" Click="Button_Download_Click" HorizontalAlignment="Left" Width="270"/>
+        <Button x:Name="Button_Extract" Content="Extract" Margin="10,80,10,10" VerticalAlignment="Top" Height="30" Click="Button_Extract_Click" HorizontalAlignment="Left" Width="270"/>
+        <Button x:Name="Button_Generate" Content="Generate" Margin="10,115,10,10" VerticalAlignment="Top" Height="30" Click="Button_Generate_Click" HorizontalAlignment="Left" Width="270"/>
+        <Button x:Name="Button_Open" Content="Open result folder" Margin="10,150,10,10" VerticalAlignment="Top" Height="30" Click="Button_Open_Click" HorizontalAlignment="Left" Width="270"/>
+        <Button x:Name="Button_AllInOne" Content="All in one" Margin="285,10,10,10" VerticalAlignment="Top" Height="135" HorizontalAlignment="Left" Width="105" Click="Button_AllInOne_Click"/>
+        <Button x:Name="Button_ClearCache" Content="Clear cache" Margin="285,150,10,10" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="105" Click="Button_ClearCache_Click"/>
     </Grid>
 </Window>
