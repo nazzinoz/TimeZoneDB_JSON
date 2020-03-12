@@ -6,6 +6,21 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>TimeZoneDB_JSON</AssemblyName>
     <RootNamespace>TimeZoneDB_JSON</RootNamespace>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Authors>nazzinoz</Authors>
+    <Description>Convert TimeZoneDB.org database to JSON format.</Description>
+    <PackageProjectUrl>https://github.com/noz1995/TimeZoneDB_JSON</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/noz1995/TimeZoneDB_JSON</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>Free</PackageTags>
+    <StartupObject>TimeZoneDB_JSON.App</StartupObject>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Copyright>nazzinoz</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Win32Resource />
   </PropertyGroup>
 
 </Project>
