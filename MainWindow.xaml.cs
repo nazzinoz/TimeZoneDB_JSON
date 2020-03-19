@@ -29,19 +29,19 @@ namespace TimeZoneDB_JSON
             {
                 var updateInfo = Worker.CheckUpdate();
                 if (updateInfo == null)
-                {
                     MessageBox.Show(Worker.MESSAGE_NO_DB);
-                    return;
+                else
+                {
+
+                    var localVersion = updateInfo.Item1;
+                    var currentVersion = updateInfo.Item2;
+
+                    var message = Worker.MESSAGE_LOCAL_VERSION + localVersion + Environment.NewLine
+                                  + Worker.MESSAGE_CURRENT_VERSION + currentVersion + Environment.NewLine
+                                  + (currentVersion.CompareTo(localVersion) > 0 ? Worker.MESSAGE_REQUIRE_REDOWNLOADING : Worker.MESSAGE_UP_TO_DATE);
+
+                    MessageBox.Show(message);
                 }
-
-                var localVersion = updateInfo.Item1;
-                var currentVersion = updateInfo.Item2;
-
-                var message = Worker.MESSAGE_LOCAL_VERSION + localVersion + Environment.NewLine
-                              + Worker.MESSAGE_CURRENT_VERSION + currentVersion + Environment.NewLine
-                              + (currentVersion.CompareTo(localVersion) > 0 ? Worker.MESSAGE_REQUIRE_REDOWNLOADING : Worker.MESSAGE_UP_TO_DATE);
-
-                MessageBox.Show(message);
             }
             catch
             {
